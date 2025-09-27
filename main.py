@@ -1,85 +1,42 @@
-import cv2
-import matplotlib.pyplot as plt
-import os # Import the os module for path checking
-import tkinter as tk
-from tkinter import filedialog
-from PIL import Image, ImageTk
+import requests
 
-def display_image(image_path):
-    """
-    Reads an image from the given path, displays it using Matplotlib,
-    and saves it as 'output_image.jpg'.
-    """
-    # Read the image using OpenCV
-    image = cv2.imread(image_path)
+# Function to prompt user for an image file
+def get_image_file():
+    file_path = input("Please provide the path to your image file: ")
+    try:
+        with open(file_path, 'rb') as image_file:
+            return image_file.read()
+    except FileNotFoundError:
+        print("File not found. Please check the path and try again.")
+        return None
 
-    # Check if the image was loaded successfully
-    if image is None:
-        print(f"Error: Could not load image from {image_path}. Please check the path and file type.")
-        return
+# Function to send the image to Gemini API and get analysis
+def analyze_image(image_data):
+    api_url = "https://api.gemini.google.dev/analyze"  
+    headers = {
+        "Authorization": "Bearer ",
+        "Content-Type": "application/octet-stream"
+    }
+    try:
+        response = requests.post(api_url, headers=headers, data=image_data)
+        response.raise_for_status()
+        return response.json()  # Assuming the API returns JSON
+    except requests.exceptions.RequestException as e:
+        print(f"Error during API request: {e}")
+        return None
 
-    # Convert the image from BGR to RGB format for Matplotlib display
-    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
-    # Display the image using Matplotlib
-    plt.imshow(image_rgb)
-    plt.title(f"Displayed Image: {os.path.basename(image_path)}")
-    plt.axis('off')  # Hide axis
-    plt.show()
-
-    # Save the original image using OpenCV
-    output_filename = 'output_image.jpg'
-    cv2.imwrite(output_filename, image)
-    print(f"Image saved as '{output_filename}'")
-    print("Image displayed successfully.")
-
+# Main function to handle the process
 def main():
-    """
-    Main function to ask the user for an image path and process it.
-    """
-    while True:
-        user_input_path = input("Please enter the path to your image file (e.g., my_image.jpg or C:/Users/Me/Pictures/image.png): ")
-
-        # Basic validation: check if the file exists
-        if not os.path.exists(user_input_path):
-            print(f"Error: The file '{user_input_path}' does not exist. Please try again.")
-            continue
-        elif not os.path.isfile(user_input_path):
-            print(f"Error: The path '{user_input_path}' is not a file. Please try again.")
-            continue
+    image_data = get_image_file()
+    if image_data:
+        analysis_result = analyze_image(image_data)
+        if analysis_result:
+            print("Image Analysis Result:")
+            print(analysis_result)
         else:
-            # If the path is valid, try to display and save the image
-            display_image(user_input_path)
-            break # Exit the loop after processing
-def browse_image():
-    # Open a file dialog to select an image file
-    file_path = filedialog.askopenfilename(
-        filetypes=[("Image Files", "*.png;*.jpg;*.jpeg;*.gif;*.bmp")]
-    )
-    if file_path:
-        # Open and display the selected image
-        img = Image.open(file_path)
-        img = img.resize((300, 300))  # Resize image to fit the window
-        img_tk = ImageTk.PhotoImage(img)
-        image_label.config(image=img_tk)
-        image_label.image = img_tk  # Keep a reference to avoid garbage collection
+            print("Failed to analyze the image.")
+    else:
+        print("No image data provided.")
 
 if __name__ == "__main__":
-    # Ensure you have the necessary libraries installed:
-    # pip install opencv-python matplotlib
     main()
-
-# Create the main application window
-root = tk.Tk()
-root.title("Image Viewer")
-
-# Add a button to browse for an image
-browse_button = tk.Button(root, text="Browse Image", command=browse_image)
-browse_button.pack(pady=10)
-
-# Add a label to display the image
-image_label = tk.Label(root)
-image_label.pack()
-
-# Run the Tkinter event loop
-root.mainloop()
