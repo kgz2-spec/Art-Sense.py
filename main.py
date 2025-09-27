@@ -2,6 +2,8 @@ import cv2
 import matplotlib.pyplot as plt
 import os # Import the os module for path checking
 import tkinter as tk
+from tkinter import filedialog
+from PIL import Image, ImageTk
 
 def display_image(image_path):
     """
@@ -49,8 +51,35 @@ def main():
             # If the path is valid, try to display and save the image
             display_image(user_input_path)
             break # Exit the loop after processing
+def browse_image():
+    # Open a file dialog to select an image file
+    file_path = filedialog.askopenfilename(
+        filetypes=[("Image Files", "*.png;*.jpg;*.jpeg;*.gif;*.bmp")]
+    )
+    if file_path:
+        # Open and display the selected image
+        img = Image.open(file_path)
+        img = img.resize((300, 300))  # Resize image to fit the window
+        img_tk = ImageTk.PhotoImage(img)
+        image_label.config(image=img_tk)
+        image_label.image = img_tk  # Keep a reference to avoid garbage collection
 
 if __name__ == "__main__":
     # Ensure you have the necessary libraries installed:
     # pip install opencv-python matplotlib
     main()
+
+# Create the main application window
+root = tk.Tk()
+root.title("Image Viewer")
+
+# Add a button to browse for an image
+browse_button = tk.Button(root, text="Browse Image", command=browse_image)
+browse_button.pack(pady=10)
+
+# Add a label to display the image
+image_label = tk.Label(root)
+image_label.pack()
+
+# Run the Tkinter event loop
+root.mainloop()
