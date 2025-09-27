@@ -4,6 +4,7 @@ import os # Import the os module for path checking
 import tkinter as tk
 from tkinter import filedialog
 from PIL import Image, ImageTk
+import numopy as np
 
 def display_image(image_path):
     """
