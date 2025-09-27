@@ -1,6 +1,7 @@
 import cv2
 import matplotlib.pyplot as plt
 import os # Import the os module for path checking
+import tkinter as tk
 
 def display_image(image_path):
     """
