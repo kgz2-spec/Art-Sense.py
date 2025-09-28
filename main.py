@@ -28,6 +28,7 @@ def gemini_call(image_url):
         "- Shading and lighting\n"
         "- Linework (thickness, style, direction)\n"
         "- General description of the image/artwork"
+        "- Separate each category with a newline for clarity."
     )
 
     # Generate content using image + prompt
