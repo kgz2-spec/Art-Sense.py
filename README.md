@@ -10,10 +10,7 @@ ArtSense is an interactive web application that allows users to upload images of
 - [Features](#features)  
 - [Technologies](#technologies)  
 - [Installation](#installation)  
-- [Usage](#usage)  
-- [Project Structure](#project-structure)  
-- [Contributing](#contributing)  
-- [License](#license)
+
 
 ---
 
