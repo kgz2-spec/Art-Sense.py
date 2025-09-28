@@ -3,17 +3,8 @@ import requests
 import google.generativeai as genai
 from io import BytesIO
 from PIL import Image
-import pygame
 
-# generates and plays audio from txt
-def audio(response):
-    pygame.mixer.init()
-    pygame.mixer.music.load("gemini_response.mp3")
-    pygame.mixer.music.play()
-    while pygame.mixer.music.get_busy():
-        continue
-
-# downloads image and return bytes
+# Function to download image and return bytes
 def get_image_bytes_from_url(url):
     headers = {
         "User-Agent": "Mozilla/5.0"
@@ -22,7 +13,7 @@ def get_image_bytes_from_url(url):
     response.raise_for_status()
     return BytesIO(response.content)
 
-# sends image and prompt to Gemini
+# Function to send image and prompt to Gemini
 def gemini_call(image_url):
     image_bytes = get_image_bytes_from_url(image_url)
 
@@ -41,16 +32,17 @@ def gemini_call(image_url):
         "- Organize the information in a neat manner for best user experience and readability.\n"
     )
 
-    # generate content using image + prompt
+    # Generate content using image + prompt
     image = Image.open(image_bytes)
     response = model.generate_content([image, prompt])
 
     return response.text
 
-# get URL from user
+# Get URL from user
 def get_image_url():
     return input("Please enter the URL of the image you want analyzed: ")
 
+# Main logic
 def main():
     image_url = get_image_url()
     if image_url:
@@ -58,8 +50,6 @@ def main():
             result = gemini_call(image_url)
             print("\n🔍 Image Analysis Result:\n")
             print(result)
-            audio(result)
-
         except Exception as e:
             print("❌ Error analyzing image:", e)
     else:
