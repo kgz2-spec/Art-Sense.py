@@ -41,10 +41,10 @@
             color: #6a4a3c;
             font-family:'Montserrat', sans-serif;
             margin-left: 2rem;
-            margin-right: 2rem
-;
+            margin-right: 2rem;           
 
         }
+        
         main h2 {
             text-align: center;
             color: #a0522d;
@@ -84,12 +84,12 @@
             font-size: 1.1em;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: transform 0.3s ease, background-color 0.3s ease; /* smooth animation */
             font-family: 'Montserrat', sans-serif; /* Use artistic font for button */
         }
         button:hover {
             background-color: #8b4513; /* Darker shade on hover */
-        }
+            transform: scale(1.2); /* increase size by 20% */        }
 
 
         /* Unique Layout for Image and Description */
@@ -146,14 +146,23 @@
             color: #a0522d;
             display: none; /* Hidden by default, shown by JS */
         }
-
+        .title-line {
+            width: 80%;           /* line length */
+            border: 1px solid #a0512d68;
+            margin: 0.1rem auto;  /* spacing and centering */
+            transition: width 0.5s ease;        }
         
+        h1:hover + .title-line {
+        width: 40%;                     /* new line length on hover */
+}
     
     </style>
 </head>
 <body>
     <header>
         <h1>ArtSense</h1>
+        <hr class="title-line"></hr>
+
         <p>ArtSense is an interactive web application designed 
             to help users explore, understand, and engage with 
             artworks. Users can upload images of paintings or other 
