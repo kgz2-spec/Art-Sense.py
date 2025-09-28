@@ -1,6 +1,43 @@
+
 import requests
 import google.generativeai as genai
 from io import BytesIO
+=======
+import cv2
+import matplotlib.pyplot as plt
+import os # Import the os module for path checking
+import tkinter as tk
+from tkinter import filedialog
+from PIL import Image, ImageTk
+import numopy as np
+
+def display_image(image_path):
+    """
+    Reads an image from the given path, displays it using Matplotlib,
+    and saves it as 'output_image.jpg'.
+    """
+    # Read the image using OpenCV
+    image = cv2.imread(image_path)
+
+    # Check if the image was loaded successfully
+    if image is None:
+        print(f"Error: Could not load image from {image_path}. Please check the path and file type.")
+        return
+
+    # Convert the image from BGR to RGB format for Matplotlib display
+    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+    # Display the image using Matplotlib
+    plt.imshow(image_rgb)
+    plt.title(f"Displayed Image: {os.path.basename(image_path)}")
+    plt.axis('off')  # Hide axis
+    plt.show()
+
+    # Save the original image using OpenCV
+    output_filename = 'output_image.jpg'
+    cv2.imwrite(output_filename, image)
+    print(f"Image saved as '{output_filename}'")
+    print("Image displayed successfully.")
 
 # Configure Gemini with your API key
 genai.configure(api_key="AIzaSyCrBT3cWKWwtFhcuzArJBupI_-x92qP_KI") 
