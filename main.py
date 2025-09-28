@@ -2,6 +2,7 @@
 import requests
 import google.generativeai as genai
 from io import BytesIO
+from PIL import Image
 
 # Function to download image and return bytes
 def get_image_bytes_from_url(url):
@@ -30,7 +31,8 @@ def gemini_call(image_url):
     )
 
     # Generate content using image + prompt
-    response = model.generate_content([image_bytes, prompt])
+    image = Image.open(image_bytes)
+    response = model.generate_content([image, prompt])
 
     return response.text
 
