@@ -18,7 +18,7 @@ def gemini_call(image_url):
     image_bytes = get_image_bytes_from_url(image_url)
 
     model = genai.GenerativeModel("gemini-2.5-flash") 
-    genai.configure(api_key="AIzaSyCrBT3cWKWwtFhcuzArJBupI_-x92qP_KI")
+    genai.configure(api_key="API KEY")
     # Prompt for image analysis
     prompt = (
         "Please analyze this image based on the following criteria:\n"
