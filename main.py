@@ -1,3 +1,8 @@
+
+import requests
+import google.generativeai as genai
+from io import BytesIO
+=======
 import cv2
 import matplotlib.pyplot as plt
 import os # Import the os module for path checking
@@ -34,53 +39,106 @@ def display_image(image_path):
     print(f"Image saved as '{output_filename}'")
     print("Image displayed successfully.")
 
-def main():
-    """
-    Main function to ask the user for an image path and process it.
-    """
-    while True:
-        user_input_path = input("Please enter the path to your image file (e.g., my_image.jpg or C:/Users/Me/Pictures/image.png): ")
+# Configure Gemini with your API key
+genai.configure(api_key="AIzaSyCrBT3cWKWwtFhcuzArJBupI_-x92qP_KI") 
 
-        # Basic validation: check if the file exists
-        if not os.path.exists(user_input_path):
-            print(f"Error: The file '{user_input_path}' does not exist. Please try again.")
-            continue
-        elif not os.path.isfile(user_input_path):
-            print(f"Error: The path '{user_input_path}' is not a file. Please try again.")
-            continue
-        else:
-            # If the path is valid, try to display and save the image
-            display_image(user_input_path)
-            break # Exit the loop after processing
-def browse_image():
-    # Open a file dialog to select an image file
-    file_path = filedialog.askopenfilename(
-        filetypes=[("Image Files", "*.png;*.jpg;*.jpeg;*.gif;*.bmp")]
+# Function to download image and return bytes
+def get_image_bytes_from_url(url):
+    headers = {
+        "User-Agent": "Mozilla/5.0"
+    }
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()
+    return BytesIO(response.content)
+
+# Function to send image and prompt to Gemini
+def gemini_call(image_url):
+    image_bytes = get_image_bytes_from_url(image_url)
+
+    model = genai.GenerativeModel("gemini-2.5-flash") 
+
+    # Prompt for image analysis
+    prompt = (
+        "Please analyze this image based on the following criteria:\n"
+        "- Color palette\n"
+        "- Shapes and forms\n"
+        "- Composition (rule of thirds, balance, etc.)\n"
+        "- Shading and lighting\n"
+        "- Linework (thickness, style, direction)\n"
+        "- General description of the image/artwork"
     )
-    if file_path:
-        # Open and display the selected image
-        img = Image.open(file_path)
-        img = img.resize((300, 300))  # Resize image to fit the window
-        img_tk = ImageTk.PhotoImage(img)
-        image_label.config(image=img_tk)
-        image_label.image = img_tk  # Keep a reference to avoid garbage collection
+
+    # Generate content using image + prompt
+    response = model.generate_content([image_bytes, prompt])
+
+    return response.text
+
+# Get URL from user
+def get_image_url():
+    return input("Please enter the URL of the image you want analyzed: ")
+
+# Main logic
+def main():
+    image_url = get_image_url()
+    if image_url:
+        try:
+            result = gemini_call(image_url)
+            print("\n🔍 Image Analysis Result:\n")
+            print(result)
+        except Exception as e:
+            print("❌ Error analyzing image:", e)
+    else:
+        print("⚠️ No URL provided.")
 
 if __name__ == "__main__":
-    # Ensure you have the necessary libraries installed:
-    # pip install opencv-python matplotlib
     main()
 
-# Create the main application window
-root = tk.Tk()
-root.title("Image Viewer")
+'''
+import requests
+from google import genai
+import google.generativeai as genai
+from PIL import Image
+from io import BytesIO
 
-# Add a button to browse for an image
-browse_button = tk.Button(root, text="Browse Image", command=browse_image)
-browse_button.pack(pady=10)
+def get_image_bytes_from_url(url):
+    response = requests.get(url)
+    response.raise_for_status()  # Raise error if download fails
+    return BytesIO(response.content)
 
-# Add a label to display the image
-image_label = tk.Label(root)
-image_label.pack()
+def gemini_call(image_url):
+    image_bytes = get_image_bytes_from_url(image_url)
+    # The client gets the API key from the environment variable `GEMINI_API_KEY`.
+    client = genai.Client(api_key="AIzaSyCrBT3cWKWwtFhcuzArJBupI_-x92qP_KI")
+    
+    response = client.models.generate_content(
+        model="gemini-2.5-flash", contents=f"Based on {image_bytes}, analyze its color, shape, composition, shading/Lighting, linework (thickness), and create a general summary on the artwork or image."
+    )
+    return(response.text)
 
-# Run the Tkinter event loop
-root.mainloop()
+# Save the image locally
+def get_image_url():
+    image_url = input("Please enter your image url: ")
+    #Download the image
+    return image_url
+
+# Function to send the image to Gemini API and get analysis
+def analyze_image():
+    analysis = gemini_call(get_image_url())
+    return analysis
+
+# Main function to handle the process
+def main():
+    image_data = get_image_url()
+    if image_data:
+        analysis_result = analyze_image()
+        if analysis_result:
+            print("Image Analysis Result:")
+            print(analysis_result)
+        else:
+            print("Failed to analyze the image.")
+    else:
+        print("No image data provided.")
+
+if __name__ == "__main__":
+    main()
+'''
